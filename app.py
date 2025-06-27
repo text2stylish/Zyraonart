@@ -6,6 +6,9 @@ app = Flask(__name__)
 
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 
+# 👇 Debug line to check if token is available
+print("🔐 Replicate API Token:", REPLICATE_API_TOKEN)
+
 # ✅ Updated model version
 MODEL_VERSION = "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc"
 
