@@ -5,7 +5,9 @@ from flask import Flask, request, jsonify, send_from_directory
 app = Flask(__name__)
 
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
-MODEL_VERSION = "stability-ai/sdxl:put-your-model-version-id-here"  # Replace with your actual model version ID
+
+# ✅ Updated model version
+MODEL_VERSION = "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc"
 
 @app.route('/')
 def index():
