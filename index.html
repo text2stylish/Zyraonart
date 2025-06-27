@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Art Generator</title>
+</head>
+<body>
+  <h1>AI Art Generator</h1>
+  <form onsubmit="generateImage(event)">
+    <input type="text" id="prompt" placeholder="Enter a prompt" required />
+    <button type="submit">Generate</button>
+  </form>
+  <div id="output"></div>
+
+  <script>
+    async function generateImage(event) {
+      event.preventDefault();
+      const prompt = document.getElementById("prompt").value;
+
+      const response = await fetch("/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await response.json();
+      const outputDiv = document.getElementById("output");
+
+      if (data.output) {
+        outputDiv.innerHTML = `<img src="${data.output}" width="512" />`;
+      } else {
+        outputDiv.textContent = "Error: " + JSON.stringify(data.error);
+      }
+    }
+  </script>
+</body>
+</html>
