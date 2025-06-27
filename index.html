@@ -1,36 +1,288 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Art Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-dark: #5649c0;
+      --secondary: #00cec9;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+      --gray: #dfe6e9;
+      --success: #00b894;
+      --error: #d63031;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .tagline {
+      font-weight: 300;
+      opacity: 0.9;
+    }
+    
+    .generator-form {
+      padding: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #output {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: var(--gray);
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    
+    #output img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .loading {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+      color: var(--error);
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--dark);
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>AI Art Generator</h1>
-  <form onsubmit="generateImage(event)">
-    <input type="text" id="prompt" placeholder="Enter a prompt" required />
-    <button type="submit">Generate</button>
-  </form>
-  <div id="output"></div>
+  <div class="container">
+    <header>
+      <h1>AI Art Generator</h1>
+      <p class="tagline">Transform your imagination into stunning visuals</p>
+    </header>
+    
+    <div class="generator-form">
+      <form onsubmit="generateImage(event)">
+        <div class="form-group">
+          <label for="prompt">Prompt</label>
+          <textarea id="prompt" placeholder="Describe the image you want to generate..." required></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="style">Art Style</label>
+            <select id="style">
+              <option value="realistic">Realistic</option>
+              <option value="digital-art">Digital Art</option>
+              <option value="fantasy">Fantasy</option>
+              <option value="anime">Anime</option>
+              <option value="watercolor">Watercolor</option>
+              <option value="oil-painting">Oil Painting</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="quality">Quality</label>
+            <select id="quality">
+              <option value="standard">Standard</option>
+              <option value="high">High</option>
+              <option value="ultra">Ultra</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="negative-prompt">Negative Prompt (optional)</label>
+          <input type="text" id="negative-prompt" placeholder="What you don't want to see in the image...">
+        </div>
+        
+        <button type="submit">Generate Artwork</button>
+        
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Creating your artwork... This may take a moment</p>
+        </div>
+      </form>
+      
+      <div id="output">
+        <p>Your generated artwork will appear here</p>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>AI Art Generator &copy; 2023 | Powered by cutting-edge AI technology</p>
+  </footer>
 
   <script>
     async function generateImage(event) {
       event.preventDefault();
       const prompt = document.getElementById("prompt").value;
+      
+      // Show loading state
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('output').innerHTML = '';
+      
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
 
-      const response = await fetch("/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
+        const data = await response.json();
+        const outputDiv = document.getElementById("output");
 
-      const data = await response.json();
-      const outputDiv = document.getElementById("output");
-
-      if (data.output) {
-        outputDiv.innerHTML = `<img src="${data.output}" width="512" />`;
-      } else {
-        outputDiv.textContent = "Error: " + JSON.stringify(data.error);
+        if (data.output) {
+          outputDiv.innerHTML = `<img src="${data.output}" width="512" />`;
+        } else {
+          outputDiv.innerHTML = `<p class="error-message">Error: ${data.error || 'Unknown error occurred'}</p>`;
+        }
+      } catch (error) {
+        document.getElementById('output').innerHTML = `<p class="error-message">Error: ${error.message}</p>`;
+      } finally {
+        document.getElementById('loading').style.display = 'none';
       }
     }
   </script>
 </body>
-</html>
+  </html>
